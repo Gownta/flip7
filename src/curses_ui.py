@@ -114,18 +114,24 @@ class CursesUI:
         """Refresh the message display area."""
         self.clear_area(self.message_row, self.max_messages)
         max_y, max_x = self.stdscr.getmaxyx()
-        for i, (msg, color) in enumerate(self.messages):
+        current_row = 0
+        for msg, color in self.messages:
             lines = msg.split("\n")
-            for j, line in enumerate(lines):
-                if i + j < self.max_messages:
+            for line in lines:
+                if current_row < self.max_messages:
                     # Truncate line to fit screen width, leaving room for safe display
                     display_line = line[: max_x - 2] if len(line) > max_x - 2 else line
                     try:
                         self.stdscr.addstr(
-                            self.message_row + i + j, 0, display_line, color
+                            self.message_row + current_row, 0, display_line, color
                         )
                     except curses.error:
                         pass
+                    current_row += 1
+                else:
+                    break
+            if current_row >= self.max_messages:
+                break
 
     def get_input(self, prompt):
         """Get user input at the input row."""
