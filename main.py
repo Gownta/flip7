@@ -8,6 +8,7 @@ from src.game_state import GameState
 from src.card import CardType, ActionType
 from src.action_handler import ActionHandler
 from src.player_hand import AddCardResult
+from src.strategy import Strategy
 
 
 def display_hand(game_state, player_idx=0):
@@ -47,6 +48,31 @@ def display_hand(game_state, player_idx=0):
 def display_card_drawn(card):
     """Display a card that was just drawn."""
     print(f"\n>>> You drew: {card}")
+
+
+def display_recommendation(game_state, player_idx=0):
+    """Display the strategy recommendation."""
+    recommendation, details = Strategy.recommend_action(game_state, player_idx)
+
+    print("\n" + "-" * 60)
+    print("STRATEGY RECOMMENDATION")
+    print("-" * 60)
+
+    if "reason" in details:
+        print(f"Recommendation: {recommendation}")
+        print(f"Reason: {details['reason']}")
+    else:
+        print(f"Recommendation: {recommendation}")
+        print(f"Current score if staying: {details['current_score']}")
+        print(f"Expected value of hitting: {details['ev_hit']}")
+        print(f"Bust probability: {details['bust_probability']}%")
+
+        if recommendation == "HIT":
+            print(f"Advantage: +{details['advantage']} expected points by hitting")
+        else:
+            print(f"Advantage: +{details['advantage']} points by staying")
+
+    print("-" * 60)
 
 
 def handle_draw(game_state, player_idx=0):
@@ -142,6 +168,8 @@ def play_round(game_state):
         hand = game_state.get_player_hand(player_idx)
         if hand.is_frozen or hand.has_busted:
             break
+
+        display_recommendation(game_state, player_idx)
 
         choice = input("\n(H)it or (S)tay? ").strip().lower()
 
