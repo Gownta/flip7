@@ -35,9 +35,9 @@ class CursesUI:
     Layout:
     - Row 0-2: Game header (round/score info)
     - Row 4-12: Hand display
-    - Row 14-22: Strategy recommendation
-    - Row 24-30: Messages/events
-    - Row 32+: Input prompt
+    - Row 15-22: Strategy recommendation
+    - Row 25-40: Messages/events (16 lines)
+    - Row 43+: Input prompt
     """
 
     def __init__(self, stdscr):
@@ -50,11 +50,11 @@ class CursesUI:
         self.hand_row = 4
         self.recommendation_row = 15
         self.message_row = 25
-        self.input_row = 33
+        self.input_row = 43
 
         # Message buffer
         self.messages = []
-        self.max_messages = 6
+        self.max_messages = 16
 
     def setup_colors(self):
         """Initialize color pairs for the UI."""
