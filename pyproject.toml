@@ -1,9 +1,10 @@
 [project]
-name = ""
+name = "flip7"
 version = "0.1.0"
-description = ""
+description = "Flip 7 card game implementation with optimal strategy solver"
 readme = "README.md"
 authors = [
   { name = "Nicholas Ormrod", email = "nicholas.ormrod@gmail.com" },
 ]
 requires-python = ">=3.9"
+keywords = ["game", "card-game", "strategy", "optimization"]
