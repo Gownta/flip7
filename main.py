@@ -1,10 +1,10 @@
 """
 Flip 7 Terminal Game
 
-Entry point for playing Flip 7.
+Entry point for playing Flip 7 with curses UI.
 """
 
-from src.gameplay_ui import main
+from src.curses_ui import main
 
 
 if __name__ == "__main__":
