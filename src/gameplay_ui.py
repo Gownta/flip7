@@ -5,10 +5,38 @@ Terminal UI functions for playing Flip 7.
 """
 
 from src.game_state import GameState
-from src.card import CardType, ActionType
+from src.card import Card, CardType, ActionType, ModifierType
 from src.action_handler import ActionHandler
 from src.player_hand import AddCardResult
 from src.strategy import Strategy
+
+
+def card_to_shorthand(card):
+    """
+    Convert a card to shorthand notation.
+
+    Examples:
+    - Number(5) -> "5"
+    - Modifier(+4) -> "+4"
+    - Modifier(X2) -> "x2"
+    - Action(FLIP_THREE) -> "flip 3"
+    - Action(FREEZE) -> "freeze"
+    - Action(SECOND_CHANCE) -> "2nd chance"
+    """
+    if card.type == CardType.NUMBER:
+        return str(card.value)
+    elif card.type == CardType.MODIFIER:
+        if card.modifier_type == ModifierType.TIMES_2:
+            return "x2"
+        else:
+            return f"+{card.modifier_value}"
+    else:
+        action_names = {
+            ActionType.FLIP_THREE: "flip 3",
+            ActionType.FREEZE: "freeze",
+            ActionType.SECOND_CHANCE: "2nd chance",
+        }
+        return action_names.get(card.action_type, str(card.action_type))
 
 
 def get_hand_text(game_state, player_idx=0):
@@ -34,13 +62,13 @@ def get_hand_text(game_state, player_idx=0):
         lines.append("Number cards: (none)")
 
     if hand.modifiers:
-        mod_strs = [str(mod) for mod in hand.modifiers]
+        mod_strs = [card_to_shorthand(mod) for mod in hand.modifiers]
         lines.append(f"Modifiers: {', '.join(mod_strs)}")
     else:
         lines.append("Modifiers: (none)")
 
     if hand.action_cards:
-        action_strs = [str(action) for action in hand.action_cards]
+        action_strs = [card_to_shorthand(action) for action in hand.action_cards]
         lines.append(f"Action cards: {', '.join(action_strs)}")
 
     lines.append(f"\nDeck: {game_state.deck.cards_remaining()} cards remaining")
@@ -51,7 +79,7 @@ def get_hand_text(game_state, player_idx=0):
 
 def get_card_drawn_text(card):
     """Get the text for a drawn card."""
-    return f">>> You drew: {card}"
+    return f">>> You drew: {card_to_shorthand(card)}"
 
 
 def get_recommendation_text(game_state, player_idx=0):
