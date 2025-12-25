@@ -9,6 +9,7 @@ from src.game_state import GameState
 from src.card import CardType, ActionType
 from src.action_handler import ActionHandler
 from src.player_hand import AddCardResult
+from src.strategy import Strategy
 from src.gameplay_ui import (
     get_hand_text,
     get_card_drawn_text,
@@ -268,7 +269,17 @@ class CursesUI:
             if hand.is_frozen or hand.has_busted:
                 break
 
-            choice = self.get_input("(H)it or (S)tay? ")
+            # Get recommendation for default action on Enter
+            recommendation, _ = Strategy.recommend_action(game_state, player_idx)
+            choice = self.get_input("(H)it or (S)tay? [Enter for recommended] ")
+
+            # If empty, use recommendation
+            if choice == "":
+                choice = "h" if recommendation == "HIT" else "s"
+                self.add_message(
+                    f"Using recommendation: {recommendation}", curses.color_pair(2)
+                )
+                self.refresh()
 
             if choice == "h" or choice == "hit":
                 can_continue = self.handle_draw(game_state, player_idx)
