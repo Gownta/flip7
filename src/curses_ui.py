@@ -75,9 +75,15 @@ class CursesUI:
     def display_text_at(self, row, text, color_pair=0):
         """Display multi-line text starting at the given row."""
         lines = text.split("\n")
+        max_y, max_x = self.stdscr.getmaxyx()
         for i, line in enumerate(lines):
-            if row + i < curses.LINES - 1:
-                self.stdscr.addstr(row + i, 0, line[: curses.COLS - 1], color_pair)
+            if row + i < max_y - 1:
+                # Truncate line to fit screen width, leaving room for safe display
+                display_line = line[: max_x - 2] if len(line) > max_x - 2 else line
+                try:
+                    self.stdscr.addstr(row + i, 0, display_line, color_pair)
+                except curses.error:
+                    pass
 
     def display_header(self, round_num, total_score):
         """Display the game header at the top."""
@@ -107,23 +113,38 @@ class CursesUI:
     def refresh_messages(self):
         """Refresh the message display area."""
         self.clear_area(self.message_row, self.max_messages)
+        max_y, max_x = self.stdscr.getmaxyx()
         for i, (msg, color) in enumerate(self.messages):
             lines = msg.split("\n")
             for j, line in enumerate(lines):
                 if i + j < self.max_messages:
-                    self.stdscr.addstr(
-                        self.message_row + i + j, 0, line[: curses.COLS - 1], color
-                    )
+                    # Truncate line to fit screen width, leaving room for safe display
+                    display_line = line[: max_x - 2] if len(line) > max_x - 2 else line
+                    try:
+                        self.stdscr.addstr(
+                            self.message_row + i + j, 0, display_line, color
+                        )
+                    except curses.error:
+                        pass
 
     def get_input(self, prompt):
         """Get user input at the input row."""
         self.clear_area(self.input_row, 2)
-        self.stdscr.addstr(self.input_row, 0, prompt)
-        self.stdscr.refresh()
-        curses.echo()
-        response = self.stdscr.getstr(self.input_row, len(prompt), 20).decode("utf-8")
-        curses.noecho()
-        return response.strip().lower()
+        max_y, max_x = self.stdscr.getmaxyx()
+        # Truncate prompt to fit screen width
+        display_prompt = prompt[: max_x - 22] if len(prompt) > max_x - 22 else prompt
+        try:
+            self.stdscr.addstr(self.input_row, 0, display_prompt)
+            self.stdscr.refresh()
+            curses.echo()
+            response = self.stdscr.getstr(
+                self.input_row, len(display_prompt), 20
+            ).decode("utf-8")
+            curses.noecho()
+            return response.strip().lower()
+        except curses.error:
+            curses.noecho()
+            return ""
 
     def refresh(self):
         """Refresh the screen."""
