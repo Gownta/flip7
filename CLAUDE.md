@@ -11,6 +11,7 @@ After each change, do the following things:
 
 # Coding conventions
 
+- Source code lives in src/, tests live in tests/
 - When adding doc comments, if the doc comment is more then one line then start the comment on the line after the quotes. Examples:
 
     """
