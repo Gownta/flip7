@@ -1,0 +1,7 @@
+# OS
+*.swp
+*.DS_Store
+
+# Build directories
+build/
+tmp/
