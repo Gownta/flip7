@@ -225,3 +225,14 @@ def play_game():
     print(f"CONGRATULATIONS! YOU REACHED {total_score} POINTS!")
     print(f"Game completed in {round_num} rounds")
     print("=" * 60)
+
+
+def main():
+    """Main entry point with error handling."""
+    try:
+        play_game()
+    except KeyboardInterrupt:
+        print("\n\nGame interrupted. Thanks for playing!")
+    except Exception as e:
+        print(f"\n\nError occurred: {e}")
+        raise
